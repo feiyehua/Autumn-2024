@@ -1,7 +1,7 @@
 /*** 
  * @Author       : FeiYehua
  * @Date         : 2024-10-26 09:06:15
- * @LastEditTime : 2024-10-26 10:24:18
+ * @LastEditTime : 2024-10-26 11:19:52
  * @LastEditors  : FeiYehua
  * @Description  : 
  * @FilePath     : P11314.cpp
@@ -11,8 +11,9 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+#include <climits>
 using namespace std;
-const int MOD = 1e9 + 7;
+const long long MOD = 1e9 + 7;
 int n;
 const int maxN = 2e5 + 10;
 int m[maxN];
@@ -42,21 +43,21 @@ struct compareDis
 priority_queue<dis, vector<dis>, compareDis> disQueue;
 int minEndDis = INT_MAX;
 int dimCount; // 记录贡献为2的维度数量；
-int ans;
-void updateAns(int x)
+long long ans;
+long long updateAns(int x)
 {
-    int tmp = 1;
+    long long tmp = 1;
     for (int i = 1; i <= x; i++)
     {
         tmp *= 2;
         tmp %= MOD;
     }
-    ans += tmp;
-    ans %= MOD;
-    return;
+    return tmp;
 }
+bool flag;
 int main()
 {
+    //freopen("Autumn-2024/MX-J8/hole/hole/hole7.in","r",stdin);
     scanf("%d", &n);
     dimCount = n;
     for (int i = 1; i <= n; i++)
@@ -76,16 +77,26 @@ int main()
     int start=0;
     while(disQueue.top().min<=minEndDis&&dimCount>0)
     {
-        for(int i=start+1;i<=min(disQueue.top().min,minEndDis);i++)
+        long long tmp = updateAns(dimCount);
+        ans += tmp * ((min(disQueue.top().min, minEndDis) - (start)) % MOD);
+        ans %= MOD;
+        start = disQueue.top().min;
+        while (disQueue.top().min == start && !disQueue.empty())
         {
-            updateAns(dimCount);
+            dimCount--;
+            if(disQueue.top().down==disQueue.top().up&&disQueue.top().min==minEndDis){
+                flag=1;
+            }
+            disQueue.pop();
         }
-        start=disQueue.top().min;
-        dimCount--;
-        disQueue.pop();
+    }
+    if(dimCount==0&&!flag)
+    {
+        ans++;
     }
     ans+=1;
     ans%=MOD;
     cout<<ans;
+    //cout<<MOD*MOD<<endl;
     return 0;
 }
