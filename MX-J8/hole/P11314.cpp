@@ -1,17 +1,18 @@
 /*** 
  * @Author       : FeiYehua
  * @Date         : 2024-10-26 09:06:15
- * @LastEditTime : 2024-10-26 11:19:52
+ * @LastEditTime : 2024-10-27 00:35:12
  * @LastEditors  : FeiYehua
  * @Description  : 
  * @FilePath     : P11314.cpp
  * @     © 2024 FeiYehua
  */
 
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <climits>
+#include<bits/stdc++.h>
+// #include <iostream>
+// #include <vector>
+// //#include <queue>
+// #include <climits>
 using namespace std;
 const long long MOD = 1e9 + 7;
 int n;
