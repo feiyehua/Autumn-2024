@@ -1,7 +1,7 @@
 /*** 
  * @Author       : FeiYehua
  * @Date         : 2024-11-04 15:36:11
- * @LastEditTime : 2024-11-04 18:26:44
+ * @LastEditTime : 2024-11-04 18:49:01
  * @LastEditors  : FeiYehua
  * @Description  : 
  * @FilePath     : P11230.cpp
@@ -60,7 +60,7 @@ void getVisitability()
         {
             int num=a[b[i].loc+startOfDict[b[i].peo]];//结束对应的数字
             ans[r-1][num]=1;
-            if(cnt[num]>0) cnt[num]=0;
+            if(cnt[num]!=b[i].peo&&cnt[num]>0) cnt[num]=0;//这里注意，只有可以从两个不同数访问过时，才能标记成0
             if(cnt[num]==-1) cnt[num]=b[i].peo;
         }
         b.clear();
