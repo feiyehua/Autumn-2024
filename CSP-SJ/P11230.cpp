@@ -1,12 +1,15 @@
 /*** 
  * @Author       : FeiYehua
  * @Date         : 2024-11-04 15:36:11
- * @LastEditTime : 2024-11-04 18:49:01
+ * @LastEditTime : 2024-11-04 18:58:56
  * @LastEditors  : FeiYehua
  * @Description  : 
  * @FilePath     : P11230.cpp
  * @     © 2024 FeiYehua
  */
+// 这题的收获：
+// 可以提前处理出所有答案，再O（1）查询；
+// 使用一个vector存储接龙的结束点，之后再详细分类处理各类结束点（有一个/多个人可以在这个数字结束）
 #include<bits/stdc++.h>
 using namespace std;
 const int maxL=2e5+10;
