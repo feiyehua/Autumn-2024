@@ -7,6 +7,8 @@
  * @FilePath     : P11231.cpp
  * @     © 2024 FeiYehua
  */
+//为什么被注释掉的写法错了？⚠️
+//思考：简化编码考虑的细节，适当忽略一些不重要的点，降低调试难度和出错概率
 #include<bits/stdc++.h>
 using namespace std;
 const int maxR=1e5+10;
