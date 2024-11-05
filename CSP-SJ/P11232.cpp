@@ -1,7 +1,7 @@
 /*** 
  * @Author       : FeiYehua
  * @Date         : 2024-11-04 22:57:55
- * @LastEditTime : 2024-11-05 17:06:41
+ * @LastEditTime : 2024-11-05 19:02:27
  * @LastEditors  : FeiYehua
  * @Description  : 
  * @FilePath     : P11232.cpp
@@ -23,7 +23,7 @@ struct detectedCar{
 bool cmp(const detectedCar &a, const detectedCar &b)
 {
 
-    return a.l > b.l;
+    return a.l < b.l;
 }
 vector<detectedCar> detectedCars;
 //priority_queue<detectedCar,vector<detectedCar>,cmp()>;
@@ -74,7 +74,7 @@ int getDetectedCar()
                 ansOfDetectedCar++;
                 //我们记录下检测到车的摄像头的序号。
                 detectedCar tmp;
-                tmp.l=lMon[l];
+                tmp.l=lMon[l]+!(haveMon[l]);
                 tmp.r=lMon[r];
                 detectedCars.push_back(tmp);
             }
@@ -103,21 +103,24 @@ void getAnsOfRemovedMon()
         {
             if(detectedCars[i].r>=detectedCars[i-1].r)
             {
-                detectedCars.erase(detectedCars.begin()+i);
-                if(i==detectedCars.size()) break;
+                detectedCars.erase(detectedCars.begin()+i);//移除了第i个元素
+                if(i>=detectedCars.size()) goto end;
             }
             else 
             {
-                detectedCars.erase(detectedCars.begin()+i-1);
-                if(i==detectedCars.size()) break;
+                detectedCars.erase(detectedCars.begin()+i-1);//移除了第i-1个元素，这时候原来的第i个元素变成了第i-1个
+                if(i>1) i--;
+                if(i>=detectedCars.size()) goto end;
             }
         }
         while(detectedCars[i].r<=detectedCars[i-1].r)
         {
             detectedCars.erase(detectedCars.begin()+i-1);
-            if(i==detectedCars.size()) break;
+            if(i>1) i--;
+            if(i>=detectedCars.size()) goto end;
         }
     }
+    end:
     int curR=detectedCars[0].r;
     int ansOfRemainedMon=1;
     for(int i=1;i<detectedCars.size();i++)
@@ -137,12 +140,13 @@ void getAnsOfRemovedMon()
 int main()
 {
 #ifndef ONLINE_JUDGE
-    freopen("./Autumn-2024/CSP-SJ/detect/detect4.in", "r", stdin);
+    freopen("./Autumn-2024/CSP-SJ/detect/detect5.in", "r", stdin);
     freopen("./Autumn-2024/CSP-SJ/detect/ans.ans", "w", stdout);
 #endif
     t=fr();
     for(int i=1;i<=t;i++)//多测
     {
+        
         memset(cars,0,sizeof(cars));
         memset(haveMon,0,sizeof haveMon);
         ansOfRemovedMon=0;
@@ -221,8 +225,10 @@ int main()
         {
             lMon[i]=lMon[i-1]+haveMon[i];
         }
+        //if(i<=3) continue;
         getDetectedCar();//计算能被检测到的车数量
         getAnsOfRemovedMon();
+        
         cout<<ansOfDetectedCar<<" "<<ansOfRemovedMon<<endl;
     }
 }
