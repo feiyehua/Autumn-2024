@@ -1,7 +1,7 @@
 /*** 
  * @Author       : FeiYehua
  * @Date         : 2024-11-04 22:57:55
- * @LastEditTime : 2024-11-05 20:00:22
+ * @LastEditTime : 2024-11-05 20:03:32
  * @LastEditors  : FeiYehua
  * @Description  : 
  * @FilePath     : P11232.cpp
@@ -22,7 +22,7 @@ struct detectedCar{
     int l;
     int r;
     bool flag;
-    int last;
+    int last;//使用一个链表结构来维护上一个元素
 }detectedCars[maxN];
 bool cmp(const detectedCar &a, const detectedCar &b)
 {
@@ -114,7 +114,7 @@ void getAnsOfRemovedMon()
             if(detectedCars[i].r>=detectedCars[getLast(i)].r)
             {
                 detectedCars[i].flag=1;
-                detectedCars[i+1].last=detectedCars[i].last;
+                detectedCars[i+1].last=detectedCars[i].last;//更新链表元素
                 goto end;
                 //if(i==detectedCars.size()) break;
             }
