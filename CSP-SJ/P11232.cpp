@@ -1,7 +1,7 @@
 /*** 
  * @Author       : FeiYehua
  * @Date         : 2024-11-04 22:57:55
- * @LastEditTime : 2024-11-05 19:49:02
+ * @LastEditTime : 2024-11-05 20:00:22
  * @LastEditors  : FeiYehua
  * @Description  : 
  * @FilePath     : P11232.cpp
@@ -22,6 +22,7 @@ struct detectedCar{
     int l;
     int r;
     bool flag;
+    int last;
 }detectedCars[maxN];
 bool cmp(const detectedCar &a, const detectedCar &b)
 {
@@ -83,8 +84,8 @@ int getDetectedCar()
 }
 int getLast(int i)
 {
-    while(detectedCars[i-1].flag==1&&i>=1) i--;
-    return i-1;
+    //while(detectedCars[i-1].flag==1&&i>=1) i--;
+    return detectedCars[i].last;
 }
 void getAnsOfRemovedMon()
 {
@@ -104,23 +105,30 @@ void getAnsOfRemovedMon()
     detectedCars[0].l=-1e9;
     for(int i=2;i<=ansOfDetectedCar;i++)
     {
+        detectedCars[i].last=i-1;
+    }
+    for(int i=2;i<=ansOfDetectedCar;i++)
+    {
         while(detectedCars[i].l==detectedCars[getLast(i)].l&&!detectedCars[i].flag)
         {
             if(detectedCars[i].r>=detectedCars[getLast(i)].r)
             {
                 detectedCars[i].flag=1;
+                detectedCars[i+1].last=detectedCars[i].last;
                 goto end;
                 //if(i==detectedCars.size()) break;
             }
             else 
             {
                 detectedCars[getLast(i)].flag=1;
+                detectedCars[i].last=detectedCars[getLast(i)].last;
                 //if(i==detectedCars.size()) break;
             }
         }
         while(detectedCars[i].r<=detectedCars[getLast(i)].r)
         {
             detectedCars[getLast(i)].flag=1;
+            detectedCars[i].last=detectedCars[getLast(i)].last;
             //if(i==detectedCars.size()) break;
         }
         end:
@@ -148,7 +156,7 @@ void getAnsOfRemovedMon()
 int main()
 {
 #ifndef ONLINE_JUDGE
-    freopen("./Autumn-2024/CSP-SJ/detect/detect4.in", "r", stdin);
+    freopen("./Autumn-2024/CSP-SJ/detect/detect5.in", "r", stdin);
     freopen("./Autumn-2024/CSP-SJ/detect/ans.ans", "w", stdout);
 #endif
     t=fr();
@@ -238,7 +246,8 @@ int main()
         getDetectedCar();//计算能被检测到的车数量
         getAnsOfRemovedMon();
         
-        cout<<ansOfDetectedCar<<" "<<ansOfRemovedMon<<endl;
+        //cout<<ansOfDetectedCar<<" "<<ansOfRemovedMon<<endl;
+        printf("%d %d\n",ansOfDetectedCar,ansOfRemovedMon);
     }
     return 0;
 }
