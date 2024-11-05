@@ -1,7 +1,7 @@
 /*** 
  * @Author       : FeiYehua
  * @Date         : 2024-11-04 22:57:55
- * @LastEditTime : 2024-11-05 19:02:27
+ * @LastEditTime : 2024-11-05 19:49:02
  * @LastEditors  : FeiYehua
  * @Description  : 
  * @FilePath     : P11232.cpp
@@ -16,16 +16,19 @@ using namespace std;
 // 使用线段树维护吗？
 // 每辆车有一个超速线段，选择若干个点，使每个线段上都有至少一个点
 // 前述思路不对，只需要将区间排序，找到最少的满足覆盖的点即可
+const int maxN=1e5+10;
+const int maxL=1e6+10;
 struct detectedCar{
     int l;
     int r;
-};
+    bool flag;
+}detectedCars[maxN];
 bool cmp(const detectedCar &a, const detectedCar &b)
 {
 
     return a.l < b.l;
 }
-vector<detectedCar> detectedCars;
+//vector<detectedCar> detectedCars;
 //priority_queue<detectedCar,vector<detectedCar>,cmp()>;
 
 int fr()
@@ -46,8 +49,6 @@ int fr()
     }
     return flag*num;
 }
-const int maxN=1e5+10;
-const int maxL=1e6+10;
 struct car
 {
     int d,v,a;
@@ -73,14 +74,17 @@ int getDetectedCar()
             {
                 ansOfDetectedCar++;
                 //我们记录下检测到车的摄像头的序号。
-                detectedCar tmp;
-                tmp.l=lMon[l]+!(haveMon[l]);
-                tmp.r=lMon[r];
-                detectedCars.push_back(tmp);
+                detectedCars[ansOfDetectedCar].l=lMon[l]+!(haveMon[l]);
+                detectedCars[ansOfDetectedCar].r=lMon[r];
             }
         }
     }
     return ansOfDetectedCar;
+}
+int getLast(int i)
+{
+    while(detectedCars[i-1].flag==1&&i>=1) i--;
+    return i-1;
 }
 void getAnsOfRemovedMon()
 {
@@ -96,35 +100,40 @@ void getAnsOfRemovedMon()
     }
     //处理各个区间中有包含关系的大区间
     //如果一个大区间包含了一个小区间，则不可能选择大区间内、小区间外的点，因为显然这样选出来的方案不是最优的。可以直接去除他们。
-    sort(detectedCars.begin(),detectedCars.end(),cmp);//这样处理后，左端点递增，如果一个的右端点小于前一个，则直接删除上一个元素；
-    for(int i=1;i<(int)detectedCars.size();i++)
+    sort(detectedCars+1,detectedCars+ansOfDetectedCar+1,cmp);//这样处理后，左端点递增，如果一个的右端点小于前一个，则直接删除上一个元素；
+    detectedCars[0].l=-1e9;
+    for(int i=2;i<=ansOfDetectedCar;i++)
     {
-        while(detectedCars[i].l==detectedCars[i-1].l)
+        while(detectedCars[i].l==detectedCars[getLast(i)].l&&!detectedCars[i].flag)
         {
-            if(detectedCars[i].r>=detectedCars[i-1].r)
+            if(detectedCars[i].r>=detectedCars[getLast(i)].r)
             {
-                detectedCars.erase(detectedCars.begin()+i);//移除了第i个元素
-                if(i>=detectedCars.size()) goto end;
+                detectedCars[i].flag=1;
+                goto end;
+                //if(i==detectedCars.size()) break;
             }
             else 
             {
-                detectedCars.erase(detectedCars.begin()+i-1);//移除了第i-1个元素，这时候原来的第i个元素变成了第i-1个
-                if(i>1) i--;
-                if(i>=detectedCars.size()) goto end;
+                detectedCars[getLast(i)].flag=1;
+                //if(i==detectedCars.size()) break;
             }
         }
-        while(detectedCars[i].r<=detectedCars[i-1].r)
+        while(detectedCars[i].r<=detectedCars[getLast(i)].r)
         {
-            detectedCars.erase(detectedCars.begin()+i-1);
-            if(i>1) i--;
-            if(i>=detectedCars.size()) goto end;
+            detectedCars[getLast(i)].flag=1;
+            //if(i==detectedCars.size()) break;
         }
+        end:
+        i<1;
     }
-    end:
-    int curR=detectedCars[0].r;
+    int i=1;
+    while(detectedCars[i].flag) i++;
+    int curR=detectedCars[i].r;
     int ansOfRemainedMon=1;
-    for(int i=1;i<detectedCars.size();i++)
+    i++;
+    for(;i<=ansOfDetectedCar;i++)
     {
+        if(detectedCars[i].flag) continue;
         if(curR<=detectedCars[i].r&&curR>=detectedCars[i].l)//当前保留的点被包含了，直接跳过
         {
             continue;
@@ -135,12 +144,11 @@ void getAnsOfRemovedMon()
         }
     }
     ansOfRemovedMon=m-ansOfRemainedMon;
-    detectedCars.clear();
 }
 int main()
 {
 #ifndef ONLINE_JUDGE
-    freopen("./Autumn-2024/CSP-SJ/detect/detect5.in", "r", stdin);
+    freopen("./Autumn-2024/CSP-SJ/detect/detect4.in", "r", stdin);
     freopen("./Autumn-2024/CSP-SJ/detect/ans.ans", "w", stdout);
 #endif
     t=fr();
@@ -149,6 +157,7 @@ int main()
         
         memset(cars,0,sizeof(cars));
         memset(haveMon,0,sizeof haveMon);
+        memset(detectedCars,0,sizeof detectedCars);
         ansOfRemovedMon=0;
         ansOfDetectedCar=0;
         n=fr();
@@ -225,11 +234,12 @@ int main()
         {
             lMon[i]=lMon[i-1]+haveMon[i];
         }
-        //if(i<=3) continue;
+        //if(i<=2) continue;
         getDetectedCar();//计算能被检测到的车数量
         getAnsOfRemovedMon();
         
         cout<<ansOfDetectedCar<<" "<<ansOfRemovedMon<<endl;
     }
+    return 0;
 }
 
