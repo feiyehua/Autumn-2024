@@ -1,7 +1,7 @@
 /*** 
  * @Author       : FeiYehua
  * @Date         : 2024-11-09 08:38:54
- * @LastEditTime : 2024-11-09 17:39:24
+ * @LastEditTime : 2024-11-09 19:11:03
  * @LastEditors  : FeiYehua
  * @Description  : 
  * @FilePath     : kingdom.cpp
@@ -59,7 +59,7 @@ int main()
 {
     #ifndef ONLINE_JUDGE
     freopen("/Users/xiong/Documents/CPP/Autumn-2024/MX-S5/kingdom/kingdom5.in","r",stdin);
-    freopen("/Users/xiong/Documents/CPP/Autumn-2024/MX-S5/kingdom/ans.out","w",stdout);
+    //freopen("/Users/xiong/Documents/CPP/Autumn-2024/MX-S5/kingdom/ans.out","w",stdout);
     #endif
     n=fr(),m=fr(),q=fr();
     int lastOne=-1;
@@ -113,7 +113,7 @@ int main()
             {
                 ans=ans+b+length[s];
                 ans%=MOD;
-                //cout<<i<<" "<<j<<" "<<ans<<" "<<b<<" "<<length[s]<<endl;
+                cout<<i<<" "<<s<<" "<<nextLoc[s]<<" "<<j<<" "<<length[s]<<endl;
                 s=nextLoc[s];
                 if(s==start) 
                 {

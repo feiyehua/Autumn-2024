@@ -1,10 +1,10 @@
 /*** 
  * @Author       : FeiYehua
  * @Date         : 2024-11-09 09:03:54
- * @LastEditTime : 2024-11-09 12:06:58
+ * @LastEditTime : 2024-11-09 20:08:40
  * @LastEditors  : FeiYehua
  * @Description  : 
- * @FilePath     : T533912.cpp
+ * @FilePath     : buy.cpp
  * @     © 2024 FeiYehua
  */
 #include<bits/stdc++.h>
@@ -15,6 +15,11 @@ using namespace std;
 //使用线段树维护区间最大值
 //找到最大优惠额，用总价减去即可
 int n,m;
+//命题人介绍了反悔贪心；
+//同样需要考虑用券给总价格带来的贡献：disc-v，使贡献值达到最大。
+//比如，同样是5 4的优惠券，
+//有5 3
+//
 int maxDis,sum;
 const int maxN=1e6+10;
 int minA=maxN,maxW=0;
@@ -132,7 +137,8 @@ signed main()
 {
     #ifndef ONLINE_JUDGE
 
-    //freopen("./Autumn-2024/MX-S5/buy/buy3.in","r",stdin);
+    freopen("./Autumn-2024/MX-S5/buy/buy6.in","r",stdin);
+    freopen("./Autumn-2024/MX-S5/buy/ans.out","w",stdout);
     #endif
     n=fr(),m=fr();
     for(int i=1;i<=n;i++)
