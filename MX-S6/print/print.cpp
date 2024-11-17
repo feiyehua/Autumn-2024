@@ -1,7 +1,7 @@
 /*** 
  * @Author       : FeiYehua
  * @Date         : 2024-11-17 09:09:42
- * @LastEditTime : 2024-11-17 14:20:08
+ * @LastEditTime : 2024-11-17 21:03:48
  * @LastEditors  : FeiYehua
  * @Description  : 
  * @FilePath     : print.cpp
@@ -72,7 +72,14 @@ signed main()
             printer.push(endTime.top().num);
             endTime.pop();
         }
-        tmp.num=printer.top();
+        //这里有坑：如果可用的打印机已经空了，就需要等待最先打完的打印机
+        if (printer.empty())
+        {
+            priFil[i].t=endTime.top().t;
+            printer.push(endTime.top().num);
+            endTime.pop();
+        }
+        tmp.num = printer.top();
         printer.pop();
         tmp.t=priFil[i].t+priFil[i].s;
         endTime.push(tmp);
