@@ -1,7 +1,7 @@
 /*** 
  * @Author       : FeiYehua
  * @Date         : 2024-11-17 10:13:01
- * @LastEditTime : 2024-11-18 16:08:51
+ * @LastEditTime : 2024-11-18 16:59:31
  * @LastEditors  : FeiYehua
  * @Description  : 
  * @FilePath     : ship.cpp
@@ -61,11 +61,11 @@ int main()
         //tim[1][0][0][0]=stas[1].p;
         for (int i = 2; i <= n; i++)
         {
-            for (int k = 0; k <= cnt[i - 1][2]; k++)
+            for (int k = 0; k <= min(cnt[i - 1][2],30); k++)
             {
-                for (int l = 0; l <= cnt[i - 1][3]; l++)
+                for (int l = 0; l <= min(cnt[i - 1][3],19); l++)
                 {
-                    for (int m = 0; m <= cnt[i - 1][4]; m++)
+                    for (int m = 0; m <= min(cnt[i - 1][4],15)&&m*2+k<=30; m++)
                     {
                         if (tim[i - 1][k][l][m] == 0)//上一点不可以此速达
                             tim[i][k][l][m] = 1e9;
@@ -96,11 +96,11 @@ int main()
             if(loc==n+1) loc=n;
             //cout<<"loc"<<loc<<endl;
             long double ans=1e9;
-            for (int k = 0; k <= cnt[loc-1][2]; k++)
+            for (int k = 0; k <= min(cnt[loc-1][2],30); k++)
             {
-                for (int l = 0; l <= cnt[loc-1][3]; l++)
+                for (int l = 0; l <= min(cnt[loc-1][3],19); l++)
                 {
-                    for (int m = 0; m <= cnt[loc-1][4]; m++)
+                    for (int m = 0; m <= min(cnt[loc-1][4],15)&&m*2+k<=30; m++)
                     {
                         ans = min(ans, tim[loc][k][l][m] + ((long double)q - (long double)stas[loc].p) / (powl(2, k) * powl(3, l) * (powl(4, m))));
                         if (stas[loc].x == 2)
