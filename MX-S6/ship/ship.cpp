@@ -1,7 +1,7 @@
 /*** 
  * @Author       : FeiYehua
  * @Date         : 2024-11-17 10:13:01
- * @LastEditTime : 2024-11-18 19:37:30
+ * @LastEditTime : 2024-11-18 19:45:47
  * @LastEditors  : FeiYehua
  * @Description  : 
  * @FilePath     : ship.cpp
@@ -65,25 +65,25 @@ int main()
         //tim[1][0][0][0]=stas[1].p;
         for (int i = 2; i <= n; i++)
         {
-            for (int k = 0; k <= min(cnt[i - 1][2],30); k++)
+            for (int k = 0; k <= min(cnt[i - 1][2]+cnt[i-1][4]*2,30); k++)
             {
                 for (int l = 0; l <= min(cnt[i - 1][3],19); l++)
                 {
-                    for (int m = 0; m <= min(cnt[i - 1][4],15)&&m*2+k<=30; m++)
-                    {
+                    // for (int m = 0; m <= min(cnt[i - 1][4],15)&&m*2+k<=30; m++)
+                    // {
                         // if(i==3&&m*2+k==1&&l==0) 
                         //     cout<<" ";
-                        if (tim[i][k + m * 2][l] == 0) // 第一次访问此点
-                            tim[i][k + m * 2][l] = 1e9;
-                        if (tim[i - 1][k + m * 2][l] != 0)
-                            tim[i][k + m * 2][l] = min(tim[i][k + m * 2][l], tim[i - 1][k + m * 2][l] + ((double)stas[i].p - (double)stas[i - 1].p) / (pow(2, k) * pow(3, l) * (pow(4, m))));
+                        if (tim[i][k][l] == 0) // 第一次访问此点
+                            tim[i][k][l] = 1e9;
+                        if (tim[i - 1][k][l] != 0)
+                            tim[i][k][l] = min(tim[i][k][l], tim[i - 1][k][l] + ((double)stas[i].p - (double)stas[i - 1].p) / (pow(2, k) * pow(3, l) ));
                         if (stas[i - 1].x == 2 && k >= 1)
-                            tim[i][k+m*2][l] = min(tim[i][k+m*2][l], tim[i - 1][k - 1+m*2][l] + ((double)stas[i].p - (double)stas[i - 1].p) / (pow(2, k) * pow(3, l) * (pow(4, m))) + stas[i - 1].t);
+                            tim[i][k][l] = min(tim[i][k][l], tim[i - 1][k - 1][l] + ((double)stas[i].p - (double)stas[i - 1].p) / (pow(2, k) * pow(3, l) ) + stas[i - 1].t);
                         if (stas[i - 1].x == 3 && l >= 1)
-                            tim[i][k+m*2][l] = min(tim[i][k+m*2][l], tim[i - 1][k+m*2][l - 1] + ((double)stas[i].p - (double)stas[i - 1].p) / (pow(2, k) * pow(3, l) * (pow(4, m))) + stas[i - 1].t);
-                        if (stas[i - 1].x == 4 && m >= 1)
-                            tim[i][k+m*2][l] = min(tim[i][k+m*2][l], tim[i - 1][k+(m-1)*2][l] + ((double)stas[i].p - (double)stas[i - 1].p) / (pow(2, k) * pow(3, l) * (pow(4, m))) + stas[i - 1].t);
-                    }
+                            tim[i][k][l] = min(tim[i][k][l], tim[i - 1][k][l - 1] + ((double)stas[i].p - (double)stas[i - 1].p) / (pow(2, k) * pow(3, l) ) + stas[i - 1].t);
+                        if (stas[i - 1].x == 4 && k >= 2)
+                            tim[i][k][l] = min(tim[i][k][l], tim[i - 1][k-2][l] + ((double)stas[i].p - (double)stas[i - 1].p) / (pow(2, k) * pow(3, l) ) + stas[i - 1].t);
+                    // }
                 }
             }
         }
@@ -103,39 +103,39 @@ int main()
             if(loc==n+1) loc--;
             //cout<<"loc"<<loc<<endl;
             double ans=1e9;
-            for (int k = 0; k <= min(cnt[loc-1][2],30); k++)
+            for (int k = 0; k <= min(cnt[loc-1][2]+cnt[loc-1][4]*2,30); k++)
             {
                 for (int l = 0; l <= min(cnt[loc-1][3],19); l++)
                 {
-                    for (int m = 0; m <= min(cnt[loc-1][4],15)&&m*2+k<=30; m++)
-                    {
+                    // for (int m = 0; m <= min(cnt[loc-1][4],15)&&m*2+k<=30; m++)
+                    // {
                         //cout<<k<<" "<<l<<" "<<m<<" \n";
                         // double tmp = ans;
-                        ans = min(ans, tim[loc][k+m*2][l] + ((double)y - (double)stas[loc].p) / (pow(2, k) * pow(3, l) * (pow(4, m))));
+                        ans = min(ans, tim[loc][k][l] + ((double)y - (double)stas[loc].p) / (pow(2, k) * pow(3, l) ));
                         // if (tmp != ans)
                         //     cout << l << " " << m << " " << k << " " << ans << " " << endl;
                         if (stas[loc].x == 2)
                         {
                             // tmp = ans;
-                            ans = min(ans, tim[loc][k+m*2][l] + stas[loc].t + ((double)y - (double)stas[loc].p) / (pow(2, k + 1) * pow(3, l) * (pow(4, m))));
+                            ans = min(ans, tim[loc][k][l] + stas[loc].t + ((double)y - (double)stas[loc].p) / (pow(2, k + 1) * pow(3, l) ));
                             // if (tmp != ans)
                             //     cout << l << " " << m << " " << k << " " << ans << " " << endl;
                         }
                         if (stas[loc].x == 3)
                         {
                             // tmp = ans;
-                            ans = min(ans, tim[loc][k+m*2][l] + stas[loc].t + ((double)y - (double)stas[loc].p) / (pow(2, k) * pow(3, l + 1) * (pow(4, m))));
+                            ans = min(ans, tim[loc][k][l] + stas[loc].t + ((double)y - (double)stas[loc].p) / (pow(2, k) * pow(3, l + 1) ));
                             // if (tmp != ans)
                             //     cout << l << " " << m << " " << k << " " << ans << " " << endl;
                         }
                         if (stas[loc].x == 4)
                         {
                             // tmp = ans;
-                            ans = min(ans, tim[loc][k+m*2][l] + stas[loc].t + ((double)y - (double)stas[loc].p) / (pow(2, k) * pow(3, l) * (pow(4, m + 1))));
+                            ans = min(ans, tim[loc][k][l] + stas[loc].t + ((double)y - (double)stas[loc].p) / (pow(2, k+2) * pow(3, l) ));
                             // if (tmp != ans)
                             //     cout << l << " " << m << " " << k << " " << ans << " " << endl;
                         }                  
-                    }
+                    // }
                 }
             }
             printf("%.10lf\n",ans);
