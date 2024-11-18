@@ -1,7 +1,7 @@
 /*** 
  * @Author       : FeiYehua
  * @Date         : 2024-11-17 10:13:01
- * @LastEditTime : 2024-11-18 16:59:31
+ * @LastEditTime : 2024-11-18 19:36:23
  * @LastEditors  : FeiYehua
  * @Description  : 
  * @FilePath     : ship.cpp
@@ -19,8 +19,9 @@ using namespace std;
 //考虑一个四维大dp
 //从上一个点转移到下一个点（那其实就是三维）
 //考虑到达某点的速度和时间
-const int N=31;
-long double tim[N+80][N][N][N];
+bool front_flag;
+const int N=1e5;
+long double tim[N+1][31][20];
 int n,q;
 const int maxN=1e5+10;
 struct sta{
@@ -30,21 +31,24 @@ struct sta{
 bool flag4=1;
 int cnt[maxN][6];
 int b[maxN];
+bool end_flag;
 //我的DP思路：以每次到达的加油站转移，分别存储加2倍、3倍、4倍的数量
 //优化：首先注意到加油时间总是1，那么如果速度已经快到了一定程度，那么此后的加油都是没有意义的，所以数组后几维可以只开到35左右
 //2^2=4，所以可以缩减1维，优化空间复杂度（常规来说是会爆内存的）
 int main()
 {
     #ifdef TEST
-    freopen("/Users/xiong/Documents/CPP/Autumn-2024/MX-S6/ship/ship/ship3.in","r",stdin);
+    freopen("/Users/xiong/Documents/CPP/Autumn-2024/MX-S6/ship/ship/ship4.in","r",stdin);
     freopen("/Users/xiong/Documents/CPP/Autumn-2024/MX-S6/ship/ship/ans.out","w",stdout);
+    cout<<(&end_flag-&front_flag)/(1024*1024)<<endl;
     #endif
+    
     cin>>n>>q;
     for(int i=1;i<=n;i++)
     {
         cin>>stas[i].p>>stas[i].t>>stas[i].x;
         b[i]=stas[i].p;
-        tim[i][0][0][0]=(long double) stas[i].p;
+        tim[i][0][0]=(long double) stas[i].p;
         //cnt[i][stas[i].x]++;
         if(stas[i].x!=1) flag4=0;
     }
@@ -67,16 +71,18 @@ int main()
                 {
                     for (int m = 0; m <= min(cnt[i - 1][4],15)&&m*2+k<=30; m++)
                     {
-                        if (tim[i - 1][k][l][m] == 0)//上一点不可以此速达
-                            tim[i][k][l][m] = 1e9;
-                        else
-                            tim[i][k][l][m] = tim[i - 1][k][l][m] + ((long double)stas[i].p - (long double)stas[i - 1].p) / (powl(2, k) * powl(3, l) * (powl(4, m)));
+                        // if(i==3&&m*2+k==1&&l==0) 
+                        //     cout<<" ";
+                        if (tim[i][k + m * 2][l] == 0) // 第一次访问此点
+                            tim[i][k + m * 2][l] = 1e9;
+                        if (tim[i - 1][k + m * 2][l] != 0)
+                            tim[i][k + m * 2][l] = min(tim[i][k + m * 2][l], tim[i - 1][k + m * 2][l] + ((long double)stas[i].p - (long double)stas[i - 1].p) / (powl(2, k) * powl(3, l) * (powl(4, m))));
                         if (stas[i - 1].x == 2 && k >= 1)
-                            tim[i][k][l][m] = min(tim[i][k][l][m], tim[i - 1][k - 1][l][m] + ((long double)stas[i].p - (long double)stas[i - 1].p) / (powl(2, k) * powl(3, l) * (powl(4, m))) + stas[i - 1].t);
+                            tim[i][k+m*2][l] = min(tim[i][k+m*2][l], tim[i - 1][k - 1+m*2][l] + ((long double)stas[i].p - (long double)stas[i - 1].p) / (powl(2, k) * powl(3, l) * (powl(4, m))) + stas[i - 1].t);
                         if (stas[i - 1].x == 3 && l >= 1)
-                            tim[i][k][l][m] = min(tim[i][k][l][m], tim[i - 1][k][l - 1][m] + ((long double)stas[i].p - (long double)stas[i - 1].p) / (powl(2, k) * powl(3, l) * (powl(4, m))) + stas[i - 1].t);
+                            tim[i][k+m*2][l] = min(tim[i][k+m*2][l], tim[i - 1][k+m*2][l - 1] + ((long double)stas[i].p - (long double)stas[i - 1].p) / (powl(2, k) * powl(3, l) * (powl(4, m))) + stas[i - 1].t);
                         if (stas[i - 1].x == 4 && m >= 1)
-                            tim[i][k][l][m] = min(tim[i][k][l][m], tim[i - 1][k][l][m - 1] + ((long double)stas[i].p - (long double)stas[i - 1].p) / (powl(2, k) * powl(3, l) * (powl(4, m))) + stas[i - 1].t);
+                            tim[i][k+m*2][l] = min(tim[i][k+m*2][l], tim[i - 1][k+(m-1)*2][l] + ((long double)stas[i].p - (long double)stas[i - 1].p) / (powl(2, k) * powl(3, l) * (powl(4, m))) + stas[i - 1].t);
                     }
                 }
             }
@@ -84,16 +90,17 @@ int main()
     }
     for(int i=1;i<=q;i++)
     {
-        int q;
-        cin>>q;
+        int y;
+        cin>>y;
         if(flag4)
         {
-            cout<<q<<endl;
+            cout<<y<<endl;
         }
         else
         {
-            int loc=lower_bound(b+1,b+1+n,q)-b;
-            if(loc==n+1) loc=n;
+            int loc=lower_bound(b+1,b+1+n,y)-b;
+            if(stas[loc].p>y) loc--;
+            if(loc==n+1) loc--;
             //cout<<"loc"<<loc<<endl;
             long double ans=1e9;
             for (int k = 0; k <= min(cnt[loc-1][2],30); k++)
@@ -102,14 +109,32 @@ int main()
                 {
                     for (int m = 0; m <= min(cnt[loc-1][4],15)&&m*2+k<=30; m++)
                     {
-                        ans = min(ans, tim[loc][k][l][m] + ((long double)q - (long double)stas[loc].p) / (powl(2, k) * powl(3, l) * (powl(4, m))));
+                        //cout<<k<<" "<<l<<" "<<m<<" \n";
+                        // long double tmp = ans;
+                        ans = min(ans, tim[loc][k+m*2][l] + ((long double)y - (long double)stas[loc].p) / (powl(2, k) * powl(3, l) * (powl(4, m))));
+                        // if (tmp != ans)
+                        //     cout << l << " " << m << " " << k << " " << ans << " " << endl;
                         if (stas[loc].x == 2)
-                            ans = min(ans, tim[loc][k][l][m] + stas[loc].t + ((long double)q - (long double)stas[loc].p) / (powl(2, k+1) * powl(3, l) * (powl(4, m))));
+                        {
+                            // tmp = ans;
+                            ans = min(ans, tim[loc][k+m*2][l] + stas[loc].t + ((long double)y - (long double)stas[loc].p) / (powl(2, k + 1) * powl(3, l) * (powl(4, m))));
+                            // if (tmp != ans)
+                            //     cout << l << " " << m << " " << k << " " << ans << " " << endl;
+                        }
                         if (stas[loc].x == 3)
-                            ans = min(ans, tim[loc][k][l][m] + stas[loc].t + ((long double)q - (long double)stas[loc].p) / (powl(2, k) * powl(3, l+1) * (powl(4, m))));
+                        {
+                            // tmp = ans;
+                            ans = min(ans, tim[loc][k+m*2][l] + stas[loc].t + ((long double)y - (long double)stas[loc].p) / (powl(2, k) * powl(3, l + 1) * (powl(4, m))));
+                            // if (tmp != ans)
+                            //     cout << l << " " << m << " " << k << " " << ans << " " << endl;
+                        }
                         if (stas[loc].x == 4)
-                            ans = min(ans, tim[loc][k][l][m] + stas[loc].t + ((long double)q - (long double)stas[loc].p) / (powl(2, k) * powl(3, l) * (powl(4, m+1))));
-                        // cout<<ans<<" ans\n";                     
+                        {
+                            // tmp = ans;
+                            ans = min(ans, tim[loc][k+m*2][l] + stas[loc].t + ((long double)y - (long double)stas[loc].p) / (powl(2, k) * powl(3, l) * (powl(4, m + 1))));
+                            // if (tmp != ans)
+                            //     cout << l << " " << m << " " << k << " " << ans << " " << endl;
+                        }                  
                     }
                 }
             }
