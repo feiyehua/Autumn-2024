@@ -54,12 +54,14 @@ inline int fr()
     return num;
 }
 bool can[50][50];
+double table[50][50];
 void getCan()
 {
     for(int i=0;i<=30;i++)
     {
         for(int j=0;j<=19;j++)
         {
+            table[i][j]=pow(2,i)*pow(3,j);
             if(pow(2,i)*pow(3,j)<1e9) can[i][j]=1;
         }
     }
@@ -98,25 +100,25 @@ int main()
                 if(!can[k][l]) break;     
                 tim[i][k][l] = 1e9;
                 if (tim[i - 1][k][l] != 0)
-                    tim[i][k][l] = myMin(tim[i][k][l], tim[i - 1][k][l] + ((double)stas[i].p - (double)stas[i - 1].p) / (pow(2, k) * pow(3, l)));
+                    tim[i][k][l] = myMin(tim[i][k][l], tim[i - 1][k][l] + ((double)stas[i].p - (double)stas[i - 1].p) / table[k][l]);
                 switch (stas[i - 1].x)
                 {
                 case 2:
                 {
                     if (k >= 1)
-                        tim[i][k][l] = myMin(tim[i][k][l], tim[i - 1][k - 1][l] + ((double)stas[i].p - (double)stas[i - 1].p) / (pow(2, k) * pow(3, l)) + stas[i - 1].t);
+                        tim[i][k][l] = myMin(tim[i][k][l], tim[i - 1][k - 1][l] + ((double)stas[i].p - (double)stas[i - 1].p) / table[k][l] + stas[i - 1].t);
                     break;
                 }
                 case 3:
                 {
                     if (l >= 1)
-                        tim[i][k][l] = myMin(tim[i][k][l], tim[i - 1][k][l - 1] + ((double)stas[i].p - (double)stas[i - 1].p) / (pow(2, k) * pow(3, l)) + stas[i - 1].t);
+                        tim[i][k][l] = myMin(tim[i][k][l], tim[i - 1][k][l - 1] + ((double)stas[i].p - (double)stas[i - 1].p) / table[k][l] + stas[i - 1].t);
                     break;
                 }
                 case 4:
                 {
                     if (k >= 2)
-                        tim[i][k][l] = myMin(tim[i][k][l], tim[i - 1][k - 2][l] + ((double)stas[i].p - (double)stas[i - 1].p) / (pow(2, k) * pow(3, l)) + stas[i - 1].t);
+                        tim[i][k][l] = myMin(tim[i][k][l], tim[i - 1][k - 2][l] + ((double)stas[i].p - (double)stas[i - 1].p) / table[k][l] + stas[i - 1].t);
                     break;
                 }
                 }
@@ -143,22 +145,22 @@ int main()
                         //     break;
                         // tmp *= 3;
                         if(!can[k][l]) break;  
-                        ans = myMin(ans, tim[loc][k][l] + ((double)y - (double)stas[loc].p) / (pow(2, k) * pow(3, l)));
+                        ans = myMin(ans, tim[loc][k][l] + ((double)y - (double)stas[loc].p) / table[k][l]);
                         switch (stas[loc].x)
                         {
                         case 2:
                         {
-                            ans = myMin(ans, tim[loc][k][l] + stas[loc].t + ((double)y - (double)stas[loc].p) / (pow(2, k + 1) * pow(3, l)));
+                            ans = myMin(ans, tim[loc][k][l] + stas[loc].t + ((double)y - (double)stas[loc].p) / table[k+1][l]);
                             break;
                         }
                         case 3:
                         {
-                            ans = myMin(ans, tim[loc][k][l] + stas[loc].t + ((double)y - (double)stas[loc].p) / (pow(2, k) * pow(3, l + 1)));
+                            ans = myMin(ans, tim[loc][k][l] + stas[loc].t + ((double)y - (double)stas[loc].p) / table[k][l+1]);
                             break;
                         }
                         case 4:
                         {
-                            ans = myMin(ans, tim[loc][k][l] + stas[loc].t + ((double)y - (double)stas[loc].p) / (pow(2, k + 2) * pow(3, l)));
+                            ans = myMin(ans, tim[loc][k][l] + stas[loc].t + ((double)y - (double)stas[loc].p) / table[k+2][l]);
                             break;
                         }
                         }
@@ -172,7 +174,7 @@ int main()
                     for (int l = 0; l <= myMin(cnt[loc - 1][3], 19); l++)
                     {
                         if(!can[k][l]) break;  
-                        ans = myMin(ans, tim[loc][k][l] + ((double)y - (double)stas[loc].p) / (pow(2, k) * pow(3, l)));
+                        ans = myMin(ans, tim[loc][k][l] + ((double)y - (double)stas[loc].p) / table[k][l]);
                     }
                 }
             }
