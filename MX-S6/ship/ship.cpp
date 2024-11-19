@@ -21,7 +21,7 @@ using namespace std;
 // 考虑到达某点的速度和时间
 bool front_flag;
 const int N = 1e5;
-double tim[N + 1][31][20];
+double tim[N + 1][31][20];//这个是一个坑点，在ARM Mac上的long double居然是跟double一样的大小，导致在本地和OJ用的空间不一样……Mac真就大号嵌入式……太服了
 int n, q;
 const int maxN = 1e5 + 10;
 struct sta
@@ -55,7 +55,9 @@ inline int fr()
 }
 bool can[50][50];
 double table[50][50];
-void getCan()
+void getCan()//这里，由于整个题的核心优化就是一个大表，所以每个2^a*3^b的值是可以预处理的，而且可以剔除掉超过1e9的情况
+//避免了频繁调用pow函数，造成超时
+//pow函数的复杂度是logn
 {
     for(int i=0;i<=30;i++)
     {
