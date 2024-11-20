@@ -1,7 +1,7 @@
 /*** 
  * @Author       : FeiYehua
  * @Date         : 2024-11-15 19:10:25
- * @LastEditTime : 2024-11-15 21:01:48
+ * @LastEditTime : 2024-11-20 19:54:51
  * @LastEditors  : FeiYehua
  * @Description  : 
  * @FilePath     : T539827.cpp
@@ -43,7 +43,7 @@ void wallEdi(int x)
         ori[x][m-j]='B';
         //cout<<" "<<endl;
     }
-    for(int k=i+1;k<m-j+1;k++)
+    for(int k=i+1;k<m-bCnt[x];k++)
     {
         ori[x][k]='#';
     }
@@ -95,7 +95,18 @@ int main()
         {
             if(ori[i][j]=='A'||ori[i][j]=='B')
             {
+                if(i==1)
+                {
+                    if(ori[i+1][j]==ori[i][j])rem[i][j]=1;
+                    continue;
+                }
+                if(i==n)
+                {
+                    if(ori[i-1][j]==ori[i][j]) rem[i][j]=1;
+                    continue;
+                }
                 if(ori[i-1][j]==ori[i][j]||ori[i+1][j]==ori[i][j]) rem[i][j]=1;
+                //这里注意，由于不是数组，所以访问ori[0]、ori[n+1]的指定下标全都是UB，导致出现错误
             }
         }
     }
@@ -106,6 +117,7 @@ int main()
             if(rem[i][j]) ori[i][j]='#';
         }
     }
+    //ori[1][75]='A';
     for(int i=1;i<=n;i++)
     {
         cout<<ori[i]<<endl;
