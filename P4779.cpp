@@ -77,7 +77,7 @@ signed main()
     {
         dis[i] = INT_MAX;
     }
-    dis[s] = 0, vis[1] = 1;
+    dis[s] = 0, vis[s] = 1;
     int cur = s; // 从第一个点开始
     while (cnt < n)
     {
@@ -95,8 +95,11 @@ signed main()
             }
             tmp = sides[tmp].next;
         }
-        while (!disHeap.empty() && dis[disHeap.top().num] != disHeap.top().d && vis[disHeap.top().num])//堆内存储的是当前更新了的节点，但是这些节点还没有被访问过
-        //需要弹出一些已经
+        while (!disHeap.empty() && vis[disHeap.top().num])
+        //这个语句为什么不行？原来是因为把s点记错了……无语
+        //堆内存储的是当前更新了的节点，但是这些节点可能已经被访问过了
+        //while (!disHeap.empty() && dis[disHeap.top().num] < disHeap.top().d)
+        //需要弹出一些已经被更新过的节点，即该节点已经有了更短的路径
         {
             disHeap.pop();
         }
