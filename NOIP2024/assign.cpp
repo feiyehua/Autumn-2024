@@ -1,7 +1,7 @@
 /*** 
  * @Author       : FeiYehua
  * @Date         : 2024-12-05 08:42:44
- * @LastEditTime : 2024-12-05 14:43:28
+ * @LastEditTime : 2024-12-05 15:01:24
  * @LastEditors  : FeiYehua
  * @Description  : 
  * @FilePath     : assign.cpp
@@ -42,49 +42,26 @@ bool frontGuard;
 const int maxM=1e5+10;
 int t,n,m,c,d;
 long long v;
-long long con1[100];//计算v^2*2^i对答案的贡献；
+// long long con1[100];//计算v^2*2^i对答案的贡献；
 long long con2[100];//计算v*2^i对答案的贡献；
 long long ans;
 long long re;
 long long f;//存储v*(v-1);
 void preKsm(int n)//预处理两个幂
 {
-    memset(con1,0,sizeof con1);
+    // memset(con1,0,sizeof con1);
     memset(con2,0,sizeof con2);
     // con1[0]=1;
     // con2[0]=1;
-    con1[0]=v*v;
-    con1[0]%=MOD;
+    // con1[0]=v*v;
+    // con1[0]%=MOD;
     con2[0]=v;
     for(int i=1;i<=2*log2(n);i++)
     {
-        con1[i]=(con1[i-1]*con1[i-1])%MOD;
+        // con1[i]=(con1[i-1]*con1[i-1])%MOD;
         con2[i]=(con2[i-1]*con2[i-1])%MOD;
     }
     return;
-}
-long long ksm(int k,int i)//v^i*(v^2)^(k-1-i)=
-{
-    int a=i;
-    int b=k-i-1;
-    long long ans1=1,ans2=1;
-    int cnt=0;
-    while(a>0)
-    {
-        if(a%2!=0) ans1*=(con2[cnt]);
-        ans1%=MOD;
-        a/=2;
-        cnt++;
-    }
-    cnt=0;
-    while(b>0)
-    {
-        if(b%2!=0) ans2*=con1[cnt];
-        ans2%=MOD;
-        b/=2;
-        cnt++;
-    }
-    return ((ans1*ans2)%MOD);
 }
 long long ksm2(int i)
 {
@@ -99,21 +76,7 @@ long long ksm2(int i)
     }
     return ans;
 }
-long long getAns(int k,bool flag)
-{
-    long long ans=0;
-    for(int i=0;i<=k-1;i++)
-    {
-        long long t=((ksm(k, i)) * (v - 1))%MOD;
-        ans += (t * v) % MOD;
-        assert(ans > 0);
 
-        ans%=MOD;
-    }
-    ans+=ksm(k,k-1+flag);
-    ans%=MOD;
-    return ans;
-}
 template<typename T>
 void fr(T* num)
 {
@@ -178,7 +141,7 @@ int main()
 {
     #ifdef TEST 
     cout<<(&tailGuard-&frontGuard)/1024<<endl;
-    freopen("assign/assign3.in","r",stdin);
+    freopen("assign/assign2.in","r",stdin);
     freopen("assign/ans.ans","w",stdout);
     #endif
     fr(&t);
@@ -218,7 +181,8 @@ int main()
         assert(ans>0);
         // ans*=ksm(a[m].c+n,0);
         // ans%=MOD;
-        ans*=ksm(a[1].c,0);
+        // cout<<(a[1].c-1)*2<<endl;
+        ans*=ksm2((a[1].c-1)*2);
         ans%=MOD;
         assert(ans>0);
         cout<<ans<<endl;
