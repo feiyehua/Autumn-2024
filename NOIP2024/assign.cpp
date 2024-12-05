@@ -1,7 +1,7 @@
 /*** 
  * @Author       : FeiYehua
  * @Date         : 2024-12-05 08:42:44
- * @LastEditTime : 2024-12-05 14:02:59
+ * @LastEditTime : 2024-12-05 14:43:28
  * @LastEditors  : FeiYehua
  * @Description  : 
  * @FilePath     : assign.cpp
@@ -24,10 +24,12 @@
 //设前一个限制和后一个限制的差为k。
 //保证中间的限制不会对此后的分配产生影响
 //k=1，对答案的贡献是(v-1)*v+1；
-//k>=2时，对答案的贡献是segma(v^i*((v-1)*v)^1*(v^2)^k-1-i)+v^k-1;需要保证k-1-i>=0,i>=0;
+//k>=2时，对答案的贡献是segma(v^i*((v-1)*v)^1*(v^2)^k-1-i)+v^(k-1);需要保证k-1-i>=0,i>=0;
 //所以无论k取何值，对答案的贡献都是segma(v^i*((v-1)*v)^1*(v^2)^(k-1-i))+v^k-1;需要保证k-1-i>=0,i>=0。求出总和即可
-//=(v-1)*v*segma(v^(2k-2-i))+v^k-1,0<=i<=k-1
-//=(v-1)*v*
+//=(v-1)*v*segma(v^(2k-2-i))+v^(k-1),0<=i<=k-1
+//=(v-1)*v*v^(k-1)*(v^k-1)/(v-1)+v^(k-1)
+//=(v-1)*v*v^(k-1)*(v^k-1)*re%MOD+v^(k-1)
+//这里涉及了求除法逆元。
 //每次求幂复杂度是logn，总共k的和是1e9，似乎过不了，还需要优化。
 //但是只有两个点到1e9，这个算法拿90分应该没问题。
 //对于最后一个限制，
@@ -40,9 +42,11 @@ bool frontGuard;
 const int maxM=1e5+10;
 int t,n,m,c,d;
 long long v;
-long long con1[50];//计算v^2*2^i对答案的贡献；
-long long con2[50];//计算v*2^i对答案的贡献；
+long long con1[100];//计算v^2*2^i对答案的贡献；
+long long con2[100];//计算v*2^i对答案的贡献；
 long long ans;
+long long re;
+long long f;//存储v*(v-1);
 void preKsm(int n)//预处理两个幂
 {
     memset(con1,0,sizeof con1);
@@ -52,14 +56,14 @@ void preKsm(int n)//预处理两个幂
     con1[0]=v*v;
     con1[0]%=MOD;
     con2[0]=v;
-    for(int i=1;i<=log2(n);i++)
+    for(int i=1;i<=2*log2(n);i++)
     {
         con1[i]=(con1[i-1]*con1[i-1])%MOD;
         con2[i]=(con2[i-1]*con2[i-1])%MOD;
     }
     return;
 }
-long long ksm(int k,int i)//v^i*(v^2)^(k-1-i)
+long long ksm(int k,int i)//v^i*(v^2)^(k-1-i)=
 {
     int a=i;
     int b=k-i-1;
@@ -81,6 +85,19 @@ long long ksm(int k,int i)//v^i*(v^2)^(k-1-i)
         cnt++;
     }
     return ((ans1*ans2)%MOD);
+}
+long long ksm2(int i)
+{
+    int cnt=0;
+    long long ans=1;
+    while(i>0)
+    {
+        if(i%2!=0) ans*=con2[cnt];
+        ans%=MOD;
+        i/=2;
+        cnt++;
+    }
+    return ans;
 }
 long long getAns(int k,bool flag)
 {
@@ -108,7 +125,6 @@ void fr(T* num)
         (*num)+=(*num)*9+ch-'0';
         ch=getchar_unlocked();
     }
-    //return num;
 }
 struct node{
     int c,d;
@@ -117,6 +133,46 @@ struct node{
         return c<a.c;
     }
 }a[maxM];
+void getRe()
+{
+    f=(v*(v-1))%MOD;
+    long long k[100];
+    k[0]=v-1;
+    for(int i=1;i<=log2(MOD);i++)
+    {
+        k[i]=(k[i-1]*k[i-1])%MOD;
+    }
+    int p=MOD-2;//v-1的逆元是(v-1)^p
+    re=1;
+    int cnt=0;
+    while(p>0)
+    {
+        if(p%2==1)
+        {
+            re*=k[cnt];
+            re%=MOD;
+        }
+        cnt++;
+        p/=2;
+    }
+    return;
+}
+long long getAnsFast(int k,bool flag)
+{
+    long long ans=f;
+    ans*=ksm2(k-1);
+    ans%=MOD;
+    long long p=ksm2(k)-1;
+    if(p<=0) p+=MOD;
+    p*=re;
+    p%=MOD;
+    ans*=p;
+    ans%=MOD;
+    ans+=ksm2(k-1+flag);
+    ans%=MOD;
+    assert(ans > 0);
+    return ans;
+}
 bool tailGuard;
 int main()
 {
@@ -131,6 +187,7 @@ int main()
         fr(&n);fr(&m);fr(&v);
         memset(a,0,sizeof a);
         preKsm(n);
+        getRe();//求v-1的逆元
         ans=1;
         map<int,int> cnt;
         cnt.clear();
@@ -152,12 +209,11 @@ int main()
         sort(a+1,a+2+m);
         for(int j=2;j<=m;j++)
         {
-            ans*=getAns(a[j].c-a[j-1].c,0);
+            ans*=getAnsFast(a[j].c-a[j-1].c,0);
             // cout<<"j="<<j<<" "<<a[j].c-a[j-1].c<<" "<<getAns(a[j].c-a[j-1].c,0)<<endl;
             ans%=MOD;
-            assert(ans>0);
         }
-        ans*=getAns(a[m+1].c-a[m].c,flag);
+        ans*=getAnsFast(a[m+1].c-a[m].c,flag);
         ans%=MOD;
         assert(ans>0);
         // ans*=ksm(a[m].c+n,0);
